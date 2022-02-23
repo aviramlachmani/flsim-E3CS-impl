@@ -51,6 +51,7 @@ class Config(object):
 
         # -- Model --
         self.model = config['model']
+        self.method = config['method']
 
         # -- Paths --
         fields = ['data', 'model', 'reports']

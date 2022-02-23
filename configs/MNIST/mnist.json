@@ -1,23 +1,30 @@
 {
     "clients": {
         "total": 100,
-        "per_round": 10
+        "per_round": 20,
+        "label_distribution": "uniform"
     },
     "data": {
         "loading": "static",
         "partition": {
-            "size": 600
+            "size": 500
         },
-        "IID": true
+        "IID": false,
+        "bias": {
+            "primary" : 0.8,
+            "secondary" : 0.2
+        }
+
     },
     "federated_learning": {
-        "rounds": 10000,
+        "rounds": 400,
         "target_accuracy": 0.99,
         "task": "train",
-        "epochs": 5,
-        "batch_size": 10
+        "epochs": 4,
+        "batch_size": 40
     },
     "model": "MNIST",
+    "method": "E3CS_05",
     "paths": {
         "data": "./data",
         "model": "./models"

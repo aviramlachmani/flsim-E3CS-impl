@@ -3,7 +3,10 @@ import logging
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.distributed as dist
 import torch.optim as optim
+from torch.optim.optimizer import Optimizer, required
+
 from torchvision import datasets, transforms
 
 # Training settings
@@ -18,45 +21,50 @@ device = torch.device(  # pylint: disable=no-member
 
 
 class Generator(load_data.Generator):
-    """Generator for CIFAR-10 dataset."""
+    """Generator for MNIST dataset."""
 
-    # Extract CIFAR-10 data using torchvision datasets
+    # Extract MNIST data using torchvision datasets
     def read(self, path):
-        self.trainset = datasets.CIFAR10(
-            path, train=True, download=True, transform=transforms.Compose([
+        self.trainset = datasets.EMNIST(
+            path, split="letters", train=True, download=True, transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+                transforms.Normalize(
+                    (0.1307,), (0.3081,))
             ]))
-        self.testset = datasets.CIFAR10(
-            path, train=False, transform=transforms.Compose([
+        self.testset = datasets.EMNIST(
+            path, split="letters", train=False, transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+                transforms.Normalize(
+                    (0.1307,), (0.3081,))
             ]))
         self.labels = list(self.trainset.classes)
+
 
 
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+        self.conv1 = nn.Conv2d(1, 10, 5)
+        self.conv2 = nn.Conv2d(10, 10, 5)
+        self.fc1 = nn.Linear(1000, 1280)
+        self.fc2 = nn.Linear(1280, 256)
+        self.fc3 = nn.Linear(256, 27)
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 5 * 5)
+        x = F.relu(self.conv1(x))
+                                 
+        x = F.relu(self.conv2(x))
+        x = F.max_pool2d(x, 2, 2)
+        x = x.view(-1, 1000)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
-        return x
+        return F.log_softmax(x, dim=1)
 
 
 def get_optimizer(model):
-    return optim.SGD(model.parameters(), lr=lr, momentum=momentum)
+    return FedProx(params=model.parameters(), lr=lr, momentum=momentum, mu=0.5)
+    #return optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 
 
 def get_trainloader(trainset, batch_size):
@@ -87,23 +95,14 @@ def load_weights(model, weights):
 def train(model, trainloader, optimizer, epochs):
     model.to(device)
     model.train()
-    criterion = nn.CrossEntropyLoss()
-
     for epoch in range(1, epochs + 1):
-        for batch_id, data in enumerate(trainloader):
-            # get the inputs; data is a list of [inputs, labels]
-            inputs, labels = data
-            inputs, labels = inputs.to(device), labels.to(device)
-
-            # zero the parameter gradients
+        for batch_id, (image, label) in enumerate(trainloader):
+            image, label = image.to(device), label.to(device)
             optimizer.zero_grad()
-
-            # forward + backward + optimize
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
+            output = model(image)
+            loss = F.nll_loss(output, label)
             loss.backward()
             optimizer.step()
-
             if batch_id % log_interval == 0:
                 logging.debug('Epoch: [{}/{}]\tLoss: {:.6f}'.format(
                     epoch, epochs, loss.item()))
@@ -112,19 +111,94 @@ def train(model, trainloader, optimizer, epochs):
 def test(model, testloader):
     model.to(device)
     model.eval()
+    test_loss = 0
     correct = 0
-    total = 0
+    total = len(testloader.dataset)
     with torch.no_grad():
-        for data in testloader:
-            images, labels = data
-            images, labels = images.to(device), labels.to(device)
-            outputs = model(images)
-            _, predicted = torch.max(  # pylint: disable=no-member
-                outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
+        for image, label in testloader:
+            image, label = image.to(device), label.to(device)
+            output = model(image)
+            # sum up batch loss
+            test_loss += F.nll_loss(output, label, reduction='sum').item()
+            # get the index of the max log-probability
+            pred = output.argmax(dim=1, keepdim=True)
+            correct += pred.eq(label.view_as(pred)).sum().item()
 
     accuracy = correct / total
     logging.debug('Accuracy: {:.2f}%'.format(100 * accuracy))
 
     return accuracy
+
+class FedProx(Optimizer):
+    def __init__(self, params, lr=required, momentum=0, dampening=0,
+                 weight_decay=0, nesterov=False, variance=0, mu=0):
+
+        # self.gmf = gmf
+        # self.ratio = ratio
+        self.itr = 0
+        self.a_sum = 0
+        self.mu = mu
+
+        if lr is not required and lr < 0.0:
+            raise ValueError("Invalid learning rate: {}".format(lr))
+        if momentum < 0.0:
+            raise ValueError("Invalid momentum value: {}".format(momentum))
+        if weight_decay < 0.0:
+            raise ValueError("Invalid weight_decay value: {}".format(weight_decay))
+
+        defaults = dict(lr=lr, momentum=momentum, dampening=dampening,
+                        weight_decay=weight_decay, nesterov=nesterov, variance=variance)
+        if nesterov and (momentum <= 0 or dampening != 0):
+            raise ValueError("Nesterov momentum requires a momentum and zero dampening")
+        super(FedProx, self).__init__(params, defaults)
+
+    def __setstate__(self, state):
+        super(FedProx, self).__setstate__(state)
+        for group in self.param_groups:
+            group.setdefault('nesterov', False)
+
+    def step(self, closure=None):
+        """Performs a single optimization step.
+        Arguments:
+            closure (callable, optional): A closure that reevaluates the model
+                and returns the loss.
+        """
+
+        loss = None
+        if closure is not None:
+            loss = closure()
+
+        for group in self.param_groups:
+            weight_decay = group['weight_decay']
+            momentum = group['momentum']
+            dampening = group['dampening']
+            nesterov = group['nesterov']
+
+            for p in group['params']:
+                if p.grad is None:
+                    continue
+                d_p = p.grad.data
+
+                if weight_decay != 0:
+                    d_p.add_(weight_decay, p.data)
+
+                param_state = self.state[p]
+                if 'old_init' not in param_state:
+                    param_state['old_init'] = torch.clone(p.data).detach()
+
+                if momentum != 0:
+                    if 'momentum_buffer' not in param_state:
+                        buf = param_state['momentum_buffer'] = torch.clone(d_p).detach()
+                    else:
+                        buf = param_state['momentum_buffer']
+                        buf.mul_(momentum).add_(1 - dampening, d_p)
+                    if nesterov:
+                        d_p = d_p.add(momentum, buf)
+                    else:
+                        d_p = buf
+
+                # apply proximal update
+                d_p.add_(self.mu, p.data - param_state['old_init'])
+                p.data.add_(-group['lr'], d_p)
+
+        return loss

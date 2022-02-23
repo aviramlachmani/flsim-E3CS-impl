@@ -8,6 +8,147 @@ import sys
 from threading import Thread
 import torch
 import utils.dists as dists  # pylint: disable=no-name-in-module
+import math
+
+
+def random_n(b1, b2, b3):
+    rand_list = []
+    out = [0, 0, 0, 0]
+    for i in range(20):
+        rand_list.append(random.randint(1, 100))
+    for rand in rand_list:
+        if rand <= b1:
+            out[0] += 1
+        elif b1 < rand <= b2:
+            out[1] += 1
+        elif b2 < rand <= b3:
+            out[2] += 1
+        else:
+            out[3] += 1
+    return out
+
+
+def random_sim(sample_clients):
+    ans = []
+    out = random_n(25, 50, 75)
+    pick = np.random.binomial(size=out[0], n=1, p=0.1)
+    pick = np.append(pick, np.random.binomial(size=out[1], n=1, p=0.3))
+    pick = np.append(pick, np.random.binomial(size=out[2], n=1, p=0.6))
+    pick = np.append(pick, np.random.binomial(size=out[3], n=1, p=0.9))
+    for i in range(len(pick)):
+        if pick[i] == 1:
+            ans.append(sample_clients[i])
+    return ans
+
+
+def fedcs_sim(sample_clients):
+    ans = []
+    pick = np.random.binomial(size=20, n=1, p=0.9)
+    for i in range(len(pick)):
+        if pick[i] == 1:
+            ans.append(sample_clients[i])
+    return ans
+
+
+def pow_d_sim(clients_per_round, class_a, class_b, class_c, class_d):
+    out = random_n(53, 76, 90)
+    pick_a = np.random.binomial(size=out[0], n=1, p=0.1)
+    pick_a = sum(pick_a)
+    ans_a = [client for client in random.sample(class_a, pick_a)]
+    pick_b = np.random.binomial(size=out[1], n=1, p=0.3)
+    pick_b = sum(pick_b)
+    ans_b = [client for client in random.sample(class_b, pick_b)]
+    pick_c = np.random.binomial(size=out[2], n=1, p=0.6)
+    pick_c = sum(pick_c)
+    ans_c = [client for client in random.sample(class_c, pick_c)]
+    pick_d = np.random.binomial(size=out[3], n=1, p=0.9)
+    pick_d = sum(pick_d)
+    ans_d = [client for client in random.sample(class_d, pick_d)]
+    ans = ans_a + ans_b + ans_c + ans_d
+    return ans
+
+
+def _make_class(size, p):
+    '''
+    :param size: size og returned group
+    :param p: probability of binomial distribution
+    :return: array of size 'size', with 0/1 values according to p
+    '''
+    return np.random.binomial(size=size, n=1, p=p)
+
+
+def _create_clients_group(K=100, groups=4):
+    '''
+    to simulate the 'heterogeneous volatility' the autors of the article divide the
+    whole set of clients into 4 classes, with the success rate respectively
+    set as 0.1, 0.3, 0.6, and 0.9.
+    :param K: number of total active clients
+    :param groups: number of different groups (with different binomial distribution of success rate
+    :return: group of size K, with equally divided clients into 4 classes
+    '''
+    Xt = []
+    group_size = int(K / groups)
+    Xt = np.concatenate((_make_class(group_size, 0.1), _make_class(group_size, 0.3)))
+    Xt = np.concatenate((Xt, _make_class(group_size, 0.6)))
+    Xt = np.concatenate((Xt, _make_class(group_size, 0.9)))
+    return Xt
+
+
+def _num_sigma(T, s_type, num=1, k=20, K=100):
+    def _sigma_t(t):
+        return (num * k / K)
+
+    def _inc_sigma_t(t):
+        if t < (T / 4):
+            return 0
+        else:
+            return k / K
+
+    if s_type == "num":
+        return _sigma_t
+    else:
+        return _inc_sigma_t
+
+
+def ProbAlloc(k, sigma_t, W_t, K=100):
+    '''
+    :param k: the number of involved clients in each round
+    :param sigma_t: fairness quota of round t
+    :param W_t: exponential weights for round (vector of size K)
+    :param K: total num of activate clients
+    :return: - Pt: probability allocation vector for round t
+             - St: overflowed set for round t
+    '''
+    St = []
+    P_t = np.zeros(len(W_t))
+    for i in range(0, len(W_t)):
+        P_t[i] = sigma_t + (((k - (K * sigma_t)) * W_t[i]) / sum(W_t))
+        if P_t[i] > 1:
+            P_t[i] = 1
+            St.append(i)
+
+    return P_t, St
+
+
+def E3CS_FL_algorithm(k, sigma_t, W_t, x_t, K=100, eta=0.5):
+    '''
+    :param k: the number of involved clients in each round
+    :param K: accessible clients in the system
+    :param eta: the learning rate of weights update
+    :return: At: the selected group in round t
+    '''
+    At = np.zeros(k)
+    Pt, St = ([] for i in range(2))
+
+    # x_t = _create_clients_group(K)  # the success status of a client in each round
+    Pt, St = ProbAlloc(k, sigma_t, W_t, K)
+    Pt_tensor = torch.tensor(Pt)
+    At = torch.multinomial(Pt_tensor, k, replacement=False)
+    x_estimator_t = np.zeros(K)
+    for i in range(0, K):
+        x_estimator_t[i] = x_t[i] / Pt[i] if Pt[i] > 0.014 else x_t[i] / 0.014
+        W_t[i] = W_t[i] if (i in St) else W_t[i] * math.exp((k - (K * sigma_t)) * eta * x_estimator_t[i] / K)
+    return At, W_t
 
 
 class Server(object):
@@ -132,9 +273,13 @@ class Server(object):
 
     # Run federated learning
     def run(self):
+        name_file = "output_emnist_E3CS_05_non_iid_p.txt"
         rounds = self.config.fl.rounds
         target_accuracy = self.config.fl.target_accuracy
         reports_path = self.config.paths.reports
+        f = open(name_file, 'w')
+        f.write(self.config.model + "  " + self.config.method + "  \n")
+        f.close()
 
         if target_accuracy:
             logging.info('Training: {} rounds or {}% accuracy\n'.format(
@@ -147,11 +292,16 @@ class Server(object):
             logging.info('**** Round {}/{} ****'.format(round, rounds))
 
             # Run the federated learning round
-            accuracy = self.round()
+            accuracy = self.round(round)
+            f = open(name_file, 'a')
+            f.write("round: " + str(round) + "    accuracy: " + str(accuracy * 100) + " \n")
+            f.close()
 
             # Break loop when target accuracy is met
             if target_accuracy and (accuracy >= target_accuracy):
                 logging.info('Target accuracy reached.')
+                f.write("done this test\n")
+                f.close()
                 break
 
         if reports_path:
@@ -159,11 +309,19 @@ class Server(object):
                 pickle.dump(self.saved_reports, f)
             logging.info('Saved reports: {}'.format(reports_path))
 
-    def round(self):
+    def round(self, round):
         import fl_model  # pylint: disable=import-error
-
+        if self.config.method == "E3CS_0" or self.config.method == "E3CS_05" or self.config.method == "E3CS_08" or self.config.method == "E3CS_inc":
+            if round == 1:
+                W_t_old = np.ones(100)  # change according to weights of round t
+            else:
+                W_t_old = self.W_t
         # Select clients to participate in the round
-        sample_clients = self.selection()
+        if self.config.method == "E3CS_0" or self.config.method == "E3CS_05" or self.config.method == "E3CS_08" or self.config.method == "E3CS_inc":
+            sample_clients, W_t, A_t, sample_index = self.selection(round, W_t_old)
+            self.W_t = W_t
+        else:
+            sample_clients = self.selection(round, w_t_up=0)
 
         # Configure sample clients
         self.configuration(sample_clients)
@@ -178,7 +336,10 @@ class Server(object):
 
         # Perform weight aggregation
         logging.info('Aggregating updates')
-        updated_weights = self.aggregation(reports)
+        if self.config.method == "E3CS_0" or self.config.method == "E3CS_05" or self.config.method == "E3CS_08" or self.config.method == "E3CS_inc":
+            updated_weights = self.aggregation(reports, W_t_old, A_t, sample_index)
+        else:
+            updated_weights = self.aggregation(reports, 0, A_t=0, sample_index=0)
 
         # Load updated weights
         fl_model.load_weights(self.model, updated_weights)
@@ -204,15 +365,107 @@ class Server(object):
 
     # Federated learning phases
 
-    def selection(self):
-        # Select devices to participate in round
+    def selection(self, t, w_t_up):
         clients_per_round = self.config.clients.per_round
 
-        # Select clients randomly
-        sample_clients = [client for client in random.sample(
-            self.clients, clients_per_round)]
+        if self.config.method == "random":
 
-        return sample_clients
+            # Select devices to participate in round
+
+            # Select clients randomly
+            sample_clients = [client for client in random.sample(
+                self.clients, clients_per_round)]
+
+            return random_sim(sample_clients)
+
+        elif self.config.method == "FedCS":
+            class_d = []
+            for i in range(25):
+                class_d.append(self.clients[i])
+            sample_clients = [client for client in random.sample(class_d, clients_per_round)]
+
+            return fedcs_sim(sample_clients)
+
+        elif self.config.method == "pow-d":
+            class_a = []
+            class_b = []
+            class_c = []
+            class_d = []
+            for i in range(25):
+                class_a.append(self.clients[i])
+                class_b.append(self.clients[i + 25])
+                class_c.append(self.clients[i + 50])
+                class_d.append(self.clients[i + 75])
+            return pow_d_sim(clients_per_round, class_a, class_b, class_c, class_d)
+
+        elif self.config.method == "E3CS_0":
+            k = 20  # num of selected clients in each round
+            K = 100  # num of total activated clients
+            T = 2500  # num of total rounds
+            sample_client = []
+            sample_index = []
+            Xt = _create_clients_group(K)  # the success status of a client in each round
+            sigma_t = (_num_sigma(T, s_type="num", num=0))(t)  # the minimum selection probability of each client
+            At, Wt = E3CS_FL_algorithm(k=k, sigma_t=sigma_t, x_t=Xt, W_t=w_t_up, K=K, eta=0.5)
+            At = At.detach().numpy()
+            for i in range(k):
+                if Xt[At[i]] == 1:
+                    sample_client.append(self.clients[int(At[i])])
+                    sample_index.append(int(At[i]))
+
+            return sample_client, Wt, At, sample_index
+
+        elif self.config.method == "E3CS_05":
+            k = 20  # num of selected clients in each round
+            K = 100  # num of total activated clients
+            T = 2500  # num of total rounds
+            sample_client = []
+            sample_index = []
+            Xt = _create_clients_group(K)  # the success status of a client in each round
+            sigma_t = (_num_sigma(T, s_type="num", num=0.5))(t)  # the minimum selection probability of each client
+            At, Wt = E3CS_FL_algorithm(k=k, sigma_t=sigma_t, x_t=Xt, W_t=w_t_up, K=K, eta=0.5)
+            At = At.detach().numpy()
+            for i in range(k):
+                if Xt[At[i]] == 1:
+                    sample_client.append(self.clients[int(At[i])])
+                    sample_index.append(int(At[i]))
+
+            return sample_client, Wt, At, sample_index
+
+
+        elif self.config.method == "E3CS_08":
+            k = 20  # num of selected clients in each round
+            K = 100  # num of total activated clients
+            T = 2500  # num of total rounds
+            sample_client = []
+            sample_index = []
+            Xt = _create_clients_group(K)  # the success status of a client in each round
+            sigma_t = (_num_sigma(T, s_type="num", num=0.8))(t)  # the minimum selection probability of each client
+            At, Wt = E3CS_FL_algorithm(k=k, sigma_t=sigma_t, x_t=Xt, W_t=w_t_up, K=K, eta=0.5)
+            At = At.detach().numpy()
+            for i in range(k):
+                if Xt[At[i]] == 1:
+                    sample_client.append(self.clients[int(At[i])])
+                    sample_index.append(int(At[i]))
+
+            return sample_client, Wt, At, sample_index
+
+        elif self.config.method == "E3CS_inc":
+            k = 20  # num of selected clients in each round
+            K = 100  # num of total activated clients
+            T = 2500  # num of total rounds
+            sample_client = []
+            sample_index = []
+            Xt = _create_clients_group(K)  # the success status of a client in each round
+            sigma_t = (_num_sigma(T, s_type="inc", num=1))(t)  # the minimum selection probability of each client
+            At, Wt = E3CS_FL_algorithm(k=k, sigma_t=sigma_t, x_t=Xt, W_t=w_t_up, K=K, eta=0.5)
+            At = At.detach().numpy()
+            for i in range(k):
+                if Xt[At[i]] == 1:
+                    sample_client.append(self.clients[int(At[i])])
+                    sample_index.append(int(At[i]))
+
+            return sample_client, Wt, At, sample_index
 
     def configuration(self, sample_clients):
         loader_type = self.config.loader
@@ -243,8 +496,8 @@ class Server(object):
 
         return reports
 
-    def aggregation(self, reports):
-        return self.federated_averaging(reports)
+    def aggregation(self, reports, updated_W, A_t, sample_index):
+        return self.federated_averaging(reports, updated_W, A_t, sample_index)
 
     # Report aggregation
     def extract_client_updates(self, reports):
@@ -267,37 +520,68 @@ class Server(object):
                 assert name == bl_name
 
                 # Calculate update
-                delta = weight - baseline
+                if self.config.method == "E3CS_0" or self.config.method == "E3CS_05" or self.config.method == "E3CS_08" or self.config.method == "E3CS_inc":
+                    delta = weight
+                else:
+                    delta = weight - baseline
                 update.append((name, delta))
             updates.append(update)
 
         return updates
 
-    def federated_averaging(self, reports):
+    def federated_averaging(self, reports, W_t, A_t, sample_index):
         import fl_model  # pylint: disable=import-error
 
         # Extract updates from reports
         updates = self.extract_client_updates(reports)
 
-        # Extract total number of samples
-        total_samples = sum([report.num_samples for report in reports])
 
-        # Perform weighted averaging
-        avg_update = [torch.zeros(x.size())  # pylint: disable=no-member
-                      for _, x in updates[0]]
-        for i, update in enumerate(updates):
-            num_samples = reports[i].num_samples
-            for j, (_, delta) in enumerate(update):
-                # Use weighted average by number of samples
-                avg_update[j] += delta * (num_samples / total_samples)
+        # Extract total number of samples
+        if self.config.method == "E3CS_0" or self.config.method == "E3CS_05" or self.config.method == "E3CS_08" or self.config.method == "E3CS_inc":
+            total_W = sum(W_t)
+        else:
+            total_samples = sum([report.num_samples for report in reports])
+
+        if len(updates) != 0:
+            # Perform weighted averaging
+            avg_update = [torch.zeros(x.size())  # pylint: disable=no-member
+                          for _, x in updates[0]]
+
+            if self.config.method == "E3CS_0" or self.config.method == "E3CS_05" or self.config.method == "E3CS_08" or self.config.method == "E3CS_inc":
+                for i, update in enumerate(updates):
+                    num_samples = reports[i].num_samples
+                    for j, (_, delta) in enumerate(update):
+                        # Use weighted average by number of samples
+                        avg_update[j] += delta * (W_t[sample_index[i]] / total_W)
+
+            else:
+                for i, update in enumerate(updates):
+                    num_samples = reports[i].num_samples
+                    for j, (_, delta) in enumerate(update):
+                        # Use weighted average by number of samples
+                        avg_update[j] += delta * (num_samples / total_samples)
 
         # Extract baseline model weights
+        else:
+            baseline_weights = fl_model.extract_weights(self.model)
+            avg_update = []
+            for i, _ in enumerate(baseline_weights):
+                avg_update.append(0)
+
         baseline_weights = fl_model.extract_weights(self.model)
 
         # Load updated weights into model
         updated_weights = []
-        for i, (name, weight) in enumerate(baseline_weights):
-            updated_weights.append((name, weight + avg_update[i]))
+        if self.config.method == "E3CS_0" or self.config.method == "E3CS_05" or self.config.method == "E3CS_08" or self.config.method == "E3CS_inc":
+            for i, (name, weight) in enumerate(baseline_weights):
+                ne_weight = 0
+                for j in range(100):
+                    if not (j in sample_index):
+                        ne_weight += weight * (W_t[j] / total_W)
+                updated_weights.append((name, ne_weight + avg_update[i]))
+        else:
+            for i, (name, weight) in enumerate(baseline_weights):
+                updated_weights.append((name, weight + avg_update[i]))
 
         return updated_weights
 

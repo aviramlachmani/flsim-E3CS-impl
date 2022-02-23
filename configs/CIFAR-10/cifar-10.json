@@ -1,23 +1,25 @@
 {
     "clients": {
         "total": 100,
-        "per_round": 10
+        "per_round": 20
     },
     "data": {
-        "loading": "static",
+        "loading": "dynamic",
         "partition": {
-            "size": 600
+            "size": 500
         },
         "IID": true
+
     },
     "federated_learning": {
-        "rounds": 10000,
+        "rounds": 200,
         "target_accuracy": 0.99,
         "task": "train",
-        "epochs": 5,
-        "batch_size": 10
+        "epochs": 4,
+        "batch_size": 40
     },
     "model": "CIFAR-10",
+    "method": "FedCS",
     "paths": {
         "data": "./data",
         "model": "./models"

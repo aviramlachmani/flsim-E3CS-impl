@@ -34,6 +34,7 @@ class Generator(load_data.Generator):  # CHECKME
         self.labels = list(self.trainset.classes)
 
 
+
 class Net(nn.Module):  # CHECKME
     def __init__(self):
         super(Net, self).__init__()
