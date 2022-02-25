@@ -19,7 +19,7 @@
         "batch_size": 40
     },
     "model": "CIFAR-10",
-    "method": "FedCS",
+    "method": "pow-d",
     "paths": {
         "data": "./data",
         "model": "./models"

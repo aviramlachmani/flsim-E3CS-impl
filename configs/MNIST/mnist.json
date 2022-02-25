@@ -24,7 +24,7 @@
         "batch_size": 40
     },
     "model": "MNIST",
-    "method": "E3CS_05",
+    "method": "E3CS_inc",
     "paths": {
         "data": "./data",
         "model": "./models"

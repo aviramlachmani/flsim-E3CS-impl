@@ -1,202 +1,201 @@
 CIFAR-10  random  
-CIFAR-10  random  
-round:1    accuracy:21.32 
-round:2    accuracy:30.03 
-round:3    accuracy:34.599999999999994 
-round:4    accuracy:39.34 
-round:5    accuracy:42.620000000000005 
-round:6    accuracy:45.67 
-round:7    accuracy:47.39 
-round:8    accuracy:48.449999999999996 
-round:9    accuracy:50.970000000000006 
-round:10    accuracy:51.949999999999996 
-round:11    accuracy:52.53 
-round:12    accuracy:53.64 
-round:13    accuracy:54.84 
-round:14    accuracy:54.37 
-round:15    accuracy:55.69 
-round:16    accuracy:56.10000000000001 
-round:17    accuracy:55.74 
-round:18    accuracy:56.38999999999999 
-round:19    accuracy:56.46 
-round:20    accuracy:58.550000000000004 
-round:21    accuracy:58.57 
-round:22    accuracy:59.519999999999996 
-round:23    accuracy:58.74 
-round:24    accuracy:59.13 
-round:25    accuracy:59.07 
-round:26    accuracy:58.709999999999994 
-round:27    accuracy:59.550000000000004 
-round:28    accuracy:59.99 
-round:29    accuracy:59.11 
-round:30    accuracy:60.74 
-round:31    accuracy:60.5 
-round:32    accuracy:61.25000000000001 
-round:33    accuracy:61.83 
-round:34    accuracy:61.58 
-round:35    accuracy:61.46 
-round:36    accuracy:61.9 
-round:37    accuracy:61.550000000000004 
-round:38    accuracy:61.85000000000001 
-round:39    accuracy:61.44 
-round:40    accuracy:62.53999999999999 
-round:41    accuracy:62.129999999999995 
-round:42    accuracy:62.55 
-round:43    accuracy:63.160000000000004 
-round:44    accuracy:63.51 
-round:45    accuracy:63.24999999999999 
-round:46    accuracy:62.949999999999996 
-round:47    accuracy:62.970000000000006 
-round:48    accuracy:62.73 
-round:49    accuracy:62.69 
-round:50    accuracy:62.38 
-round:51    accuracy:62.86000000000001 
-round:52    accuracy:62.239999999999995 
-round:53    accuracy:62.949999999999996 
-round:54    accuracy:64.37 
-round:55    accuracy:63.71 
-round:56    accuracy:64.42999999999999 
-round:57    accuracy:64.32 
-round:58    accuracy:63.55 
-round:59    accuracy:63.7 
-round:60    accuracy:65.07 
-round:61    accuracy:64.1 
-round:62    accuracy:63.29 
-round:63    accuracy:64.31 
-round:64    accuracy:64.74 
-round:65    accuracy:64.88000000000001 
-round:66    accuracy:65.05 
-round:67    accuracy:64.75 
-round:68    accuracy:64.41 
-round:69    accuracy:64.35 
-round:70    accuracy:64.69 
-round:71    accuracy:64.45 
-round:72    accuracy:63.13999999999999 
-round:73    accuracy:64.95 
-round:74    accuracy:65.06 
-round:75    accuracy:64.95 
-round:76    accuracy:64.94 
-round:77    accuracy:63.92 
-round:78    accuracy:64.28 
-round:79    accuracy:64.08 
-round:80    accuracy:63.7 
-round:81    accuracy:64.01 
-round:82    accuracy:64.46 
-round:83    accuracy:64.03999999999999 
-round:84    accuracy:64.49000000000001 
-round:85    accuracy:64.05999999999999 
-round:86    accuracy:64.59 
-round:87    accuracy:64.91 
-round:88    accuracy:64.13 
-round:89    accuracy:64.88000000000001 
-round:90    accuracy:64.14 
-round:91    accuracy:63.849999999999994 
-round:92    accuracy:64.44 
-round:93    accuracy:64.49000000000001 
-round:94    accuracy:64.14 
-round:95    accuracy:64.35 
-round:96    accuracy:65.02 
-round:97    accuracy:64.78 
-round:98    accuracy:64.34 
-round:99    accuracy:64.98 
-round:100    accuracy:64.64999999999999 
-round:101    accuracy:64.60000000000001 
-round:102    accuracy:64.11 
-round:103    accuracy:64.53999999999999 
-round:104    accuracy:64.25999999999999 
-round:105    accuracy:64.01 
-round:106    accuracy:63.43 
-round:107    accuracy:64.23 
-round:108    accuracy:64.31 
-round:109    accuracy:64.84 
-round:110    accuracy:64.77000000000001 
-round:111    accuracy:64.89 
-round:112    accuracy:64.8 
-round:113    accuracy:64.88000000000001 
-round:114    accuracy:64.41 
-round:115    accuracy:65.06 
-round:116    accuracy:65.19 
-round:117    accuracy:65.23 
-round:118    accuracy:65.0 
-round:119    accuracy:65.53999999999999 
-round:120    accuracy:65.34 
-round:121    accuracy:65.07 
-round:122    accuracy:64.53 
-round:123    accuracy:64.81 
-round:124    accuracy:64.78 
-round:125    accuracy:64.71000000000001 
-round:126    accuracy:65.11 
-round:127    accuracy:65.07 
-round:128    accuracy:64.22 
-round:129    accuracy:64.64999999999999 
-round:130    accuracy:65.14 
-round:131    accuracy:64.88000000000001 
-round:132    accuracy:65.22 
-round:133    accuracy:64.32 
-round:134    accuracy:64.53999999999999 
-round:135    accuracy:64.33 
-round:136    accuracy:64.71000000000001 
-round:137    accuracy:64.88000000000001 
-round:138    accuracy:65.07 
-round:139    accuracy:64.83 
-round:140    accuracy:65.14 
-round:141    accuracy:65.06 
-round:142    accuracy:65.18 
-round:143    accuracy:65.42 
-round:144    accuracy:64.89 
-round:145    accuracy:65.14 
-round:146    accuracy:65.29 
-round:147    accuracy:65.24 
-round:148    accuracy:65.19 
-round:149    accuracy:65.22 
-round:150    accuracy:65.12 
-round:151    accuracy:65.33 
-round:152    accuracy:65.36999999999999 
-round:153    accuracy:65.25999999999999 
-round:154    accuracy:65.25 
-round:155    accuracy:65.25999999999999 
-round:156    accuracy:65.53999999999999 
-round:157    accuracy:65.55 
-round:158    accuracy:65.57 
-round:159    accuracy:65.45 
-round:160    accuracy:65.55 
-round:161    accuracy:65.39 
-round:162    accuracy:65.42 
-round:163    accuracy:65.47 
-round:164    accuracy:65.56 
-round:165    accuracy:65.38000000000001 
-round:166    accuracy:65.42 
-round:167    accuracy:65.49000000000001 
-round:168    accuracy:65.47 
-round:169    accuracy:65.49000000000001 
-round:170    accuracy:65.48 
-round:171    accuracy:65.48 
-round:172    accuracy:65.53999999999999 
-round:173    accuracy:65.45 
-round:174    accuracy:65.57 
-round:175    accuracy:65.59 
-round:176    accuracy:65.58 
-round:177    accuracy:65.47 
-round:178    accuracy:65.56 
-round:179    accuracy:65.56 
-round:180    accuracy:65.55 
-round:181    accuracy:65.53999999999999 
-round:182    accuracy:65.64999999999999 
-round:183    accuracy:65.68 
-round:184    accuracy:65.66 
-round:185    accuracy:65.64 
-round:186    accuracy:65.67 
-round:187    accuracy:65.62 
-round:188    accuracy:65.60000000000001 
-round:189    accuracy:65.62 
-round:190    accuracy:65.63 
-round:191    accuracy:65.62 
-round:192    accuracy:65.63 
-round:193    accuracy:65.60000000000001 
-round:194    accuracy:65.69 
-round:195    accuracy:65.68 
-round:196    accuracy:65.75 
-round:197    accuracy:65.64 
-round:198    accuracy:65.66 
-round:199    accuracy:65.71000000000001 
-round:200    accuracy:65.69
+round: 1    accuracy: 49.44230769230769 
+round: 2    accuracy: 62.82211538461539 
+round: 3    accuracy: 72.5 
+round: 4    accuracy: 75.8701923076923 
+round: 5    accuracy: 78.8798076923077 
+round: 6    accuracy: 80.92307692307692 
+round: 7    accuracy: 82.3125 
+round: 8    accuracy: 83.54807692307692 
+round: 9    accuracy: 83.86057692307692 
+round: 10    accuracy: 84.67307692307692 
+round: 11    accuracy: 85.51442307692308 
+round: 12    accuracy: 86.26442307692308 
+round: 13    accuracy: 86.51442307692308 
+round: 14    accuracy: 87.47115384615385 
+round: 15    accuracy: 86.92307692307692 
+round: 16    accuracy: 87.95673076923077 
+round: 17    accuracy: 88.4375 
+round: 18    accuracy: 88.53365384615385 
+round: 19    accuracy: 88.7548076923077 
+round: 20    accuracy: 89.0625 
+round: 21    accuracy: 89.38461538461539 
+round: 22    accuracy: 89.13461538461539 
+round: 23    accuracy: 89.61538461538461 
+round: 24    accuracy: 89.9326923076923 
+round: 25    accuracy: 89.45673076923077 
+round: 26    accuracy: 90.125 
+round: 27    accuracy: 90.42307692307693 
+round: 28    accuracy: 90.58173076923077 
+round: 29    accuracy: 90.83173076923077 
+round: 30    accuracy: 90.9375 
+round: 31    accuracy: 91.0048076923077 
+round: 32    accuracy: 91.0673076923077 
+round: 33    accuracy: 90.91826923076923 
+round: 34    accuracy: 91.23557692307692 
+round: 35    accuracy: 90.91346153846153 
+round: 36    accuracy: 91.10576923076923 
+round: 37    accuracy: 91.02884615384616 
+round: 38    accuracy: 91.25961538461539 
+round: 39    accuracy: 91.5 
+round: 40    accuracy: 91.23557692307692 
+round: 41    accuracy: 91.48076923076923 
+round: 42    accuracy: 91.1875 
+round: 43    accuracy: 91.26442307692308 
+round: 44    accuracy: 91.40865384615384 
+round: 45    accuracy: 91.5625 
+round: 46    accuracy: 91.59615384615385 
+round: 47    accuracy: 91.58653846153845 
+round: 48    accuracy: 91.86538461538461 
+round: 49    accuracy: 91.70673076923077 
+round: 50    accuracy: 91.90865384615384 
+round: 51    accuracy: 92.0 
+round: 52    accuracy: 92.03846153846153 
+round: 53    accuracy: 92.05288461538461 
+round: 54    accuracy: 92.0673076923077 
+round: 55    accuracy: 92.15865384615385 
+round: 56    accuracy: 91.99038461538461 
+round: 57    accuracy: 92.03846153846153 
+round: 58    accuracy: 92.07211538461539 
+round: 59    accuracy: 92.3076923076923 
+round: 60    accuracy: 92.23557692307692 
+round: 61    accuracy: 92.125 
+round: 62    accuracy: 92.32692307692307 
+round: 63    accuracy: 92.38461538461539 
+round: 64    accuracy: 92.30288461538461 
+round: 65    accuracy: 92.3125 
+round: 66    accuracy: 92.40384615384616 
+round: 67    accuracy: 92.45673076923076 
+round: 68    accuracy: 92.35576923076924 
+round: 69    accuracy: 92.52884615384616 
+round: 70    accuracy: 92.58653846153845 
+round: 71    accuracy: 92.58173076923077 
+round: 72    accuracy: 92.52884615384616 
+round: 73    accuracy: 92.59615384615385 
+round: 74    accuracy: 92.45192307692308 
+round: 75    accuracy: 92.47596153846153 
+round: 76    accuracy: 92.54326923076923 
+round: 77    accuracy: 92.45192307692308 
+round: 78    accuracy: 92.65384615384616 
+round: 79    accuracy: 92.57692307692308 
+round: 80    accuracy: 92.8701923076923 
+round: 81    accuracy: 92.85096153846155 
+round: 82    accuracy: 92.8173076923077 
+round: 83    accuracy: 92.78365384615384 
+round: 84    accuracy: 92.73076923076923 
+round: 85    accuracy: 92.82692307692308 
+round: 86    accuracy: 92.78365384615384 
+round: 87    accuracy: 92.89423076923077 
+round: 88    accuracy: 92.63461538461539 
+round: 89    accuracy: 92.54807692307693 
+round: 90    accuracy: 92.74038461538461 
+round: 91    accuracy: 92.5625 
+round: 92    accuracy: 92.71634615384615 
+round: 93    accuracy: 92.98076923076923 
+round: 94    accuracy: 92.9375 
+round: 95    accuracy: 92.96153846153847 
+round: 96    accuracy: 92.83653846153847 
+round: 97    accuracy: 92.60576923076923 
+round: 98    accuracy: 92.74038461538461 
+round: 99    accuracy: 92.90384615384616 
+round: 100    accuracy: 92.80288461538461 
+round: 101    accuracy: 92.9375 
+round: 102    accuracy: 92.88942307692307 
+round: 103    accuracy: 92.47596153846153 
+round: 104    accuracy: 92.8701923076923 
+round: 105    accuracy: 92.96634615384616 
+round: 106    accuracy: 92.75 
+round: 107    accuracy: 92.75961538461537 
+round: 108    accuracy: 93.0048076923077 
+round: 109    accuracy: 92.95192307692308 
+round: 110    accuracy: 92.95192307692308 
+round: 111    accuracy: 92.94711538461539 
+round: 112    accuracy: 92.625 
+round: 113    accuracy: 92.84134615384615 
+round: 114    accuracy: 92.77884615384615 
+round: 115    accuracy: 92.89423076923077 
+round: 116    accuracy: 92.9375 
+round: 117    accuracy: 93.15865384615385 
+round: 118    accuracy: 92.92788461538461 
+round: 119    accuracy: 92.79807692307692 
+round: 120    accuracy: 93.08653846153845 
+round: 121    accuracy: 93.13942307692308 
+round: 122    accuracy: 92.89903846153847 
+round: 123    accuracy: 93.0 
+round: 124    accuracy: 93.26442307692308 
+round: 125    accuracy: 92.95673076923077 
+round: 126    accuracy: 93.14903846153845 
+round: 127    accuracy: 93.21153846153845 
+round: 128    accuracy: 93.28846153846155 
+round: 129    accuracy: 93.02884615384616 
+round: 130    accuracy: 92.89423076923077 
+round: 131    accuracy: 92.98076923076923 
+round: 132    accuracy: 93.02884615384616 
+round: 133    accuracy: 93.17307692307692 
+round: 134    accuracy: 93.26923076923077 
+round: 135    accuracy: 93.01442307692308 
+round: 136    accuracy: 93.16826923076923 
+round: 137    accuracy: 93.2548076923077 
+round: 138    accuracy: 93.1826923076923 
+round: 139    accuracy: 93.27884615384615 
+round: 140    accuracy: 93.20192307692308 
+round: 141    accuracy: 93.0625 
+round: 142    accuracy: 93.10096153846153 
+round: 143    accuracy: 93.08653846153845 
+round: 144    accuracy: 93.08653846153845 
+round: 145    accuracy: 93.1875 
+round: 146    accuracy: 93.08173076923076 
+round: 147    accuracy: 93.20192307692308 
+round: 148    accuracy: 93.25 
+round: 149    accuracy: 93.36057692307692 
+round: 150    accuracy: 93.20673076923077 
+round: 151    accuracy: 93.16826923076923 
+round: 152    accuracy: 93.1923076923077 
+round: 153    accuracy: 93.25 
+round: 154    accuracy: 93.17788461538463 
+round: 155    accuracy: 93.25961538461539 
+round: 156    accuracy: 93.29807692307692 
+round: 157    accuracy: 93.3173076923077 
+round: 158    accuracy: 93.10096153846153 
+round: 159    accuracy: 93.2548076923077 
+round: 160    accuracy: 93.32692307692308 
+round: 161    accuracy: 93.21634615384615 
+round: 162    accuracy: 93.14423076923077 
+round: 163    accuracy: 93.1875 
+round: 164    accuracy: 93.3125 
+round: 165    accuracy: 93.25961538461539 
+round: 166    accuracy: 93.30288461538461 
+round: 167    accuracy: 93.01442307692308 
+round: 168    accuracy: 93.13942307692308 
+round: 169    accuracy: 92.70673076923077 
+round: 170    accuracy: 93.11538461538461 
+round: 171    accuracy: 93.17788461538463 
+round: 172    accuracy: 93.13942307692308 
+round: 173    accuracy: 93.2548076923077 
+round: 174    accuracy: 93.17788461538463 
+round: 175    accuracy: 93.22115384615385 
+round: 176    accuracy: 93.11057692307692 
+round: 177    accuracy: 93.32692307692308 
+round: 178    accuracy: 93.4326923076923 
+round: 179    accuracy: 93.15384615384616 
+round: 180    accuracy: 93.29807692307692 
+round: 181    accuracy: 93.0576923076923 
+round: 182    accuracy: 93.375 
+round: 183    accuracy: 93.21153846153845 
+round: 184    accuracy: 93.1923076923077 
+round: 185    accuracy: 93.10576923076923 
+round: 186    accuracy: 93.23557692307692 
+round: 187    accuracy: 92.97596153846153 
+round: 188    accuracy: 93.02884615384616 
+round: 189    accuracy: 93.11057692307692 
+round: 190    accuracy: 93.1923076923077 
+round: 191    accuracy: 93.125 
+round: 192    accuracy: 93.03846153846153 
+round: 193    accuracy: 93.22115384615385 
+round: 194    accuracy: 93.20673076923077 
+round: 195    accuracy: 93.29807692307692 
+round: 196    accuracy: 93.1298076923077 
+round: 197    accuracy: 93.23076923076923 
+round: 198    accuracy: 93.13942307692308 
+round: 199    accuracy: 93.28365384615384 
+round: 200    accuracy: 93.375 

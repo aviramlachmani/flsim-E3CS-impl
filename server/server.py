@@ -28,6 +28,32 @@ def random_n(b1, b2, b3):
     return out
 
 
+def random_d(d, k=20):
+    rand_list = []
+    out = [0, 0, 0, 0]
+    for i in range(d):
+        rand_list.append(random.randint(1, 100))
+    for rand in rand_list:
+        if rand <= 25:
+            out[0] += 1
+        elif 25 < rand <= 50:
+            out[1] += 1
+        elif 50 < rand <= 75:
+            out[2] += 1
+        else:
+            out[3] += 1
+    pick = k
+    for i in range(4):
+        if pick == 0:
+            out[i] = 0
+        elif pick < out[i]:
+            out[i] = pick
+            pick = 0
+        else:
+            pick -= out[i]
+    return out
+
+
 def random_sim(sample_clients):
     ans = []
     out = random_n(25, 50, 75)
@@ -51,7 +77,7 @@ def fedcs_sim(sample_clients):
 
 
 def pow_d_sim(clients_per_round, class_a, class_b, class_c, class_d):
-    out = random_n(53, 76, 90)
+    out = random_d(d=70)
     pick_a = np.random.binomial(size=out[0], n=1, p=0.1)
     pick_a = sum(pick_a)
     ans_a = [client for client in random.sample(class_a, pick_a)]
@@ -273,7 +299,7 @@ class Server(object):
 
     # Run federated learning
     def run(self):
-        name_file = "output_emnist_E3CS_05_non_iid_p.txt"
+        name_file = "output_cifar_pow-d=70_iid_a.txt"
         rounds = self.config.fl.rounds
         target_accuracy = self.config.fl.target_accuracy
         reports_path = self.config.paths.reports

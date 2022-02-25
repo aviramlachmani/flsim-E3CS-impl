@@ -63,8 +63,8 @@ class Net(nn.Module):
 
 
 def get_optimizer(model):
-    return FedProx(params=model.parameters(), lr=lr, momentum=momentum, mu=0.5)
-    #return optim.SGD(model.parameters(), lr=lr, momentum=momentum)
+    #return FedProx(params=model.parameters(), lr=lr, momentum=momentum, mu=0.5)
+    return optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 
 
 def get_trainloader(trainset, batch_size):
