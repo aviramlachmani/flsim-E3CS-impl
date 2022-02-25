@@ -1,11 +1,5 @@
 # FLSim
 
-## About
-
-Welcome to **FLSim**, a PyTorch based federated learning simulation framework, created for experimental research in a paper accepted by [IEEE INFOCOM 2020](https://infocom2020.ieee-infocom.org):
-
-[Hao Wang](https://www.haow.ca), Zakhary Kaplan, [Di Niu](https://sites.ualberta.ca/~dniu/Homepage/Home.html), [Baochun Li](http://iqua.ece.toronto.edu/bli/index.html). "Optimizing Federated Learning on Non-IID Data with Reinforcement Learning," in the Proceedings of IEEE INFOCOM, Beijing, China, April 27-30, 2020.
-
 
 
 ## Installation
@@ -28,25 +22,26 @@ Before using the repository, make sure to activate the `fl-py37` environment wit
 conda activate fl-py37
 ```
 
-### Simulation
 
-To start a simulation, run [`run.py`](run.py) from the repository's root directory:
+##  Running simulation for aviram and eden project:
+1) choose database, we take as example cifar-10 database 
+2) open configs/CIFAR-10/cifar-10.json
+3) choose method value: `FedCs,random, pow-d, E3CS_0, E3CS_05, E3CS_08, E3CS_inc`
+4) for run it on iid database write:
+   `"IID": true'` . 
+   else for non-iid write:
+   `"IID": false,
+    "bias": {
+            "primary" : 0.8,
+            "secondary" : 0.2
+        }`
+   
+5) open models/CIFAR-10/fl_model.py and go to `get_optimizer()` :
+   for FedAvg choose to return: `optim.SGD(...)`
+   for FedProx choose to return: `FedProx(...)`
+6) open server and go to name_file. write the current method that you use.
+7) run form the commend-line in this folder :
+`python run.py --config=configs/CIFAR-10/cifar-10.json --log=INFO`
 
-```shell
-python run.py
-  --config=config.json
-  --log=INFO
-```
-
-##### `run.py` flags
-
-* `--config` (`-c`): path to the configuration file to be used.
-* `--log` (`-l`): level of logging info to be written to console, defaults to `INFO`.
-
-##### `config.json` files
-
-**FLSim** uses a JSON file to manage the configuration parameters for a federated learning simulation. Provided in the repository is a generic template and three preconfigured simulation files for the CIFAR-10, FashionMNIST, and MNIST datasets.
-
-For a detailed list of configuration options, see the [wiki page](https://github.com/iQua/flsim/wiki/Configuration).
-
-If you have any questions, please feel free to contact Hao Wang (haowang@ece.utoronto.ca)
+if you wish to choose Emnist database do as 1-6 and run the commend:
+   `python run.py --config=configs/MNIST/mnist.json --log=INFO`
